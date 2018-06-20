@@ -1,0 +1,61 @@
+<?php
+
+?>
+
+<div class="block-content" aria-labelledby="block-customer-login-heading">
+    <div id="converterMessage" class="message error empty" style="display: none"></div>
+    <form class="form" data-mage-init='{"validation":{}}' action="<?php echo $this->getFormAction(); ?>" method="post" id="convertPLNtoRUB" >
+        <fieldset class="fieldset" data-hasrequired="* Required Fields" style="width: 200px">
+            <div class="field number required">
+                <label for="amount" class="label"><span>RUB</span></label>
+                <div class="control">
+                    <input name="amount" type="text" class="input-text required number" id="amount" title="RUB Amount" aria-required="true">
+                </div>
+            </div>
+            <div class="field number disabled">
+                <label for="amount" class="label"><span>PLN</span></label>
+                <div class="control">
+                    <input name="result" type="text" class="input-text" readonly="readonly" id="result" title="PLN" aria-required="true">
+                </div>
+            </div>
+            <div class="actions-toolbar">
+                <div class="primary"><button type="submit" class="action primary" name="convert" id="convert"><span>Convert</span></button></div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script>
+    require(['jquery'],function(){
+        jQuery(document).ready(function() {
+            jQuery("#convertPLNtoRUB").submit(function() {
+                var amount = jQuery("#amount").val();
+                if (undefined === amount) {
+                    return false;
+                }
+
+                var url = "<?php echo $block->getFormAction() ?>";
+
+                jQuery.ajax({
+                    url: url,
+                    type: "POST",
+                    data: {
+                        amount: amount,
+                    },
+                    showLoader: true,
+                    success: function (response) {
+                        if (false === response.status) {
+                            jQuery("#converterMessage").show().html('<span>'+response.message+'</span>');
+                            jQuery("#amount").val("");
+                            jQuery("#result").val("");
+                            return;
+                        }
+                        jQuery("#converterMessage").hide();
+                        jQuery("#result").val(response.result);
+                        return;
+                    }
+                });
+                return false;
+            });
+        });
+    });
+</script>
